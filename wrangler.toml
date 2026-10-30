@@ -1,0 +1,8 @@
+name = "alpaca-trading-proxy"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+# Secrets (set these with `wrangler secret put <NAME>`, never written here or committed to git):
+#   ALPACA_KEY_ID      - your Alpaca PAPER account API key id
+#   ALPACA_SECRET_KEY  - your Alpaca PAPER account API secret key
+#   PROXY_TOKEN        - the bearer token Claude sends in "Authorization: Bearer <token>"
