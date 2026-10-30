@@ -5,6 +5,7 @@
  *   GET  /account             -> Alpaca GET /v2/account
  *   GET  /positions           -> Alpaca GET /v2/positions
  *   GET  /orders              -> Alpaca GET /v2/orders   (?status=open|closed|all, ?limit=, ?after=, ?until=)
+ *   GET  /orders/:id          -> Alpaca GET /v2/orders/:id?nested=true  (one order, with its bracket legs)
  *
  * New write endpoints (gated by the same bearer token):
  *   POST   /orders            -> Alpaca POST /v2/orders   (place an order)
@@ -132,6 +133,16 @@ export default {
       if (method === "GET" && path === "/orders") {
         const qs = url.searchParams.toString();
         const r = await fetch(`${ALPACA_BASE}/v2/orders${qs ? `?${qs}` : "?status=all&limit=50"}`, {
+          headers: alpacaHeaders(env),
+        });
+        return new Response(await r.text(), { status: r.status, headers: { "Content-Type": "application/json" } });
+      }
+
+      // --- GET /orders/:id (one order's current status, e.g. to check a bracket's legs) ---
+      const getOneMatch = path.match(/^\/orders\/([A-Za-z0-9-]+)$/);
+      if (method === "GET" && getOneMatch) {
+        const orderId = getOneMatch[1];
+        const r = await fetch(`${ALPACA_BASE}/v2/orders/${orderId}?nested=true`, {
           headers: alpacaHeaders(env),
         });
         return new Response(await r.text(), { status: r.status, headers: { "Content-Type": "application/json" } });
